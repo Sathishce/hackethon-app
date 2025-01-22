@@ -1,0 +1,114 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.upload-section {
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.upload-section input[type='file'] {
+  flex: 1;
+}
+
+.upload-section button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.upload-section button:hover {
+  background-color: #0056b3;
+}
+
+/* Three-column layout */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* File Preview */
+.file-preview {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #fff;
+  text-align: center;
+}
+
+.file-preview img, .file-preview video {
+  max-width: 100%;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+/* Result Display */
+.result-display {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.result-display h3 {
+  margin: 0 0 10px 0;
+}
+
+.result-display ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.result-display li {
+  border-bottom: 1px solid #ddd;
+  padding: 5px 0;
+}
+
+/* Chat Box */
+.chat-box {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.chat-history {
+  height: 200px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.message {
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.message.user {
+  background-color: #d1ecf1;
+  text-align: right;
+}
+
+.message.bot {
+  background-color: #f8d7da;
+}
