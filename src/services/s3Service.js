@@ -1,4 +1,5 @@
 import axios from 'axios';
+import UploadedFile from '../models/FileModel';
 
 export const uploadImage = async (file) => {
   const formData = new FormData();
@@ -10,5 +11,5 @@ export const uploadImage = async (file) => {
     { headers: { 'Content-Type': 'multipart/form-data' } }
   );
 
-  return response.data; // Contains `key` and `url` from S3
+  return new UploadedFile(response.data); // Return an instance of UploadedFile
 };

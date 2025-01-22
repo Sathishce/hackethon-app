@@ -1,43 +1,57 @@
 import React, { useState } from 'react';
-import { chatWithBot } from '../services/lexService';
+import ChatMessage from '../models/ChatModel';
+import { sendMessageToLex } from '../services/lexService'; // Import the Lex service
 
 const ChatBox = () => {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([]); // Array of ChatMessage instances
+  const [currentMessage, setCurrentMessage] = useState('');
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!currentMessage.trim()) return;
 
-    const userMessage = { sender: 'user', text: input };
-    setMessages((prev) => [...prev, userMessage]);
+    // Create a new user message
+    const newUserMessage = new ChatMessage({ sender: 'user', message: currentMessage });
+
+    // Add user message to chat
+    setMessages((prevMessages) => [...prevMessages, newUserMessage]);
 
     try {
-      const response = await chatWithBot(input);
-      const botMessage = { sender: 'bot', text: response.response };
-      setMessages((prev) => [...prev, botMessage]);
+      // Get response from Lex
+      const [userMessage, botMessage] = await sendMessageToLex(currentMessage);
+
+      // Add bot message to chat
+      setMessages((prevMessages) => [...prevMessages, userMessage, botMessage]);
     } catch (error) {
-      console.error('Chat failed:', error);
+      console.error('Error sending message to Lex:', error);
+      const errorMessage = new ChatMessage({
+        sender: 'bot',
+        message: 'Sorry, there was an error. Please try again.',
+      });
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
     }
 
-    setInput('');
+    // Clear the input field after sending the message
+    setCurrentMessage('');
   };
 
   return (
     <div className="chat-box">
-      <div className="chat-history">
+      <div className="chat-messages">
         {messages.map((msg, index) => (
-          <div key={index} className={`message ${msg.sender}`}>
-            {msg.text}
-          </div>
+          <p key={index} className={msg.isUser() ? 'user-message' : 'bot-message'}>
+            {msg.getFormattedMessage()}
+          </p>
         ))}
       </div>
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Type your message..."
-      />
-      <button onClick={sendMessage}>Send</button>
+      <div className="chat-input">
+        <input
+          type="text"
+          value={currentMessage}
+          onChange={(e) => setCurrentMessage(e.target.value)}
+          placeholder="Type a message..."
+        />
+        <button onClick={sendMessage}>Send</button>
+      </div>
     </div>
   );
 };

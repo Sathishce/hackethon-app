@@ -3,30 +3,35 @@ import UploadControl from '../components/UploadControl';
 import ChatBox from '../components/ChatBox';
 import ResultDisplay from '../components/ResultDisplay';
 import FilePreview from '../components/FilePreview';
-import { analyzeImage } from '../services/rekognitionService';
 import Layout from '../components/Layout';
+import { uploadImage } from '../services/s3Service';
+import { analyzeImage } from '../services/rekognitionService';
 
 const Home = () => {
-  const [fileKey, setFileKey] = useState('');
-  const [fileUrl, setFileUrl] = useState('');
-  const [results, setResults] = useState([]);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [rekognitionResults, setRekognitionResults] = useState([]);
 
-  const handleUploadSuccess = (response) => {
-    setFileKey(response.key); // Set the file key (from S3) in state
-    setFileUrl(response.url); // Display the uploaded file
+  const handleUploadSuccess = async (file) => {
+    try {
+      const uploadedFile = await uploadImage(file);
+      setUploadedFile(uploadedFile); // Instance of UploadedFile
+    } catch (error) {
+      console.error('Upload failed:', error);
+      alert('Upload failed.');
+    }
   };
 
   const handleAnalyze = async () => {
-    if (!fileKey) {
+    if (!uploadedFile) {
       alert('No file uploaded to analyze.');
       return;
     }
     try {
-      const response = await analyzeImage(fileKey);
-      setResults(response.labels); // Update Rekognition results
+      const results = await analyzeImage(uploadedFile.key);
+      setRekognitionResults(results); // Array of RekognitionResult
     } catch (error) {
-      console.error('Image analysis failed:', error);
-      alert('Image analysis failed.');
+      console.error('Analysis failed:', error);
+      alert('Analysis failed.');
     }
   };
 
@@ -36,20 +41,15 @@ const Home = () => {
         <UploadControl onUploadSuccess={handleUploadSuccess} />
       </div>
       <div className="content-grid">
-        {/* First Column: File Preview */}
         <div className="file-preview">
-          <FilePreview fileUrl={fileUrl} />
-          {fileKey && (
+          <FilePreview file={uploadedFile} />
+          {uploadedFile && (
             <button className="analyze-button" onClick={handleAnalyze}>
               Analyze
             </button>
           )}
         </div>
-
-        {/* Second Column: Rekognition Results */}
-        <ResultDisplay results={results} />
-
-        {/* Third Column: Chat Box */}
+        <ResultDisplay results={rekognitionResults} />
         <ChatBox />
       </div>
     </Layout>
